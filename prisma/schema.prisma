@@ -24,6 +24,7 @@ model User {
   // Active cosmos reference (only one can be active)
   activeCosmosId String? @unique @db.Uuid
   activeCosmos   Cosmos? @relation("ActiveCosmos", fields: [activeCosmosId], references: [id])
+  cosmosMembers CosmosMember[]
 
   // Media and studio settings
   studio Media?
@@ -59,8 +60,20 @@ model Cosmos {
   constellations Constellation[]
   auras          Aura[]
 
+  members   CosmosMember[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CosmosMember {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  User        User?      @relation(fields: [userId], references: [id])
+  userId      String?    @db.Uuid
+  createdAt   DateTime   @default(now())
+  member      Boolean    @default(true)
+  cosmos   Cosmos? @relation(fields: [cosmosId], references: [id])
+  cosmosId String?    @db.Uuid
 }
 
 

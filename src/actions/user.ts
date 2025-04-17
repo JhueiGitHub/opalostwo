@@ -21,13 +21,15 @@ export const onAuthenticateUser = async () => {
         clerkId: user.id,
       },
       include: {
-        workspace: {
-          where: {
-            User: {
-              clerkId: user.id,
-            },
+        cosmos: true,
+        activeCosmos: true,
+        workspace: true,
+        subscription: {
+          select: {
+            plan: true,
           },
         },
+        studio: true,
       },
     });
 
@@ -628,7 +630,22 @@ export const onAuthenticateUser = async () => {
         },
       });
 
-      return createdUser;
+      const completeUser = await tx.user.findUnique({
+        where: { id: createdUser.id },
+        include: {
+          cosmos: true,
+          activeCosmos: true,
+          workspace: true,
+          subscription: {
+            select: {
+              plan: true,
+            },
+          },
+          studio: true,
+        },
+      });
+
+      return completeUser;
     });
 
     if (newUser) {
